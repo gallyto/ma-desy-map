@@ -24,7 +24,12 @@ function initialize() {
 	});
 
 	input = (document.getElementById('searchAddress'));
-	autocomplete = autocomplete = new google.maps.places.Autocomplete(input);
+	var options = {
+		componentRestrictions : {
+			country : 'BG'
+		}
+	};
+	autocomplete = autocomplete = new google.maps.places.Autocomplete(input, options);
 	autocomplete.bindTo('bounds', map);
 
 	bind();
@@ -41,20 +46,25 @@ function codeLatLng(latLng) {
 	var lng = latLng.lng();
 	var latlng = new google.maps.LatLng(lat, lng);
 
-	geocoder.geocode({
-		'latLng' : latlng
-	}, function(results, status) {
-		if (status == google.maps.GeocoderStatus.OK) {
-			if (results[1]) {
-				infowindow.setContent(results[0].formatted_address);
-				infowindow.open(map, marker);
-			} else {
-				alert('No results found');
-			}
-		} else {
-			alert('Geocoder failed due to: ' + status);
-		}
-	});
+	geocoder
+			.geocode(
+					{
+						'latLng' : latlng
+					},
+					function(results, status) {
+						if (status == google.maps.GeocoderStatus.OK) {
+							if (results[1]) {
+								infowindow
+										.setContent(results[0].formatted_address);
+								infowindow.open(map, marker);
+								document.getElementById('searchAddress').value = results[0].formatted_address;
+							} else {
+								alert('No results found');
+							}
+						} else {
+							alert('Geocoder failed due to: ' + status);
+						}
+					});
 };
 
 function codeAddress() {
